@@ -28,4 +28,7 @@ public class User {
     @Column
     private Float longitude;
 
+    @ManyToMany
+    private List<Offer> offers;
+
 }
