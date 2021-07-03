@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Here I Go A Testing Again</title>
+</head>
+<body>
+<h1>If you can read this, I dun goofed up (not really it's just for testing though)</h1>
+
+<form th:action="@{/sign-up}" method="POST" th:object="${user}">
+
+    <input th:field="*{username}" placeholder="Username" /><br>
+    <input th:field="*{email}" placeholder="Email" /><br>
+    <input th:field="*{password}" placeholder="Password" /><br>
+    <input th:field="*{avatar_path}" placeholder="AvatarPath"/><br>
+    <input th:field="*{latitude}" placeholder="Latitude" /><br>
+    <input th:field="*{longitude}" placeholder="Longitude" /><br>
+
+<button>Submit this shit</button>
+
+</form>
+
+<div th:each="user : ${allUsers}">
+    <p><span th:text="${user.username}" /> - <span th:text="${user.email}" /> -
+        <span th:text="${user.password}" /> - <span th:text="${user.avatar_path}" /> -
+        <span th:text="${user.latitude}" /> - <span th:text="${user.longitude}" />;</p>
+</div>
+
+<form th:action="@{/business/sign-up}" method="POST" th:object="${business}">
+
+    <input th:field="*{name}" placeholder="Name" /><br>
+    <textarea rows="5" cols="100" th:field="*{description}" placeholder="Description of the business" /><br>
+    <input th:field="*{latitude}" placeholder="Latitude" /><br>
+    <input th:field="*{longitude}" placeholder="Longitude" /><br>
+
+    <button>Submit this shit</button>
+
+</form>
+
+<div th:each="business : ${allBusinesses}">
+    <p><span th:text="${business.name}" /> -
+        <span th:text="${business.latitude}" /> - <span th:text="${business.longitude}" />;</p>
+    <p th:text="${business.description}"></p>
+</div>
+
+</body>
+</html>

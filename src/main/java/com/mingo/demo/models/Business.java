@@ -1,5 +1,7 @@
 package com.mingo.demo.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -22,13 +24,15 @@ public class Business {
     @Column
     private int businessType;
 
-    @Column
+    @Column(length = 4000)
     private String description;
 
     @OneToMany
+    @JsonManagedReference
     List<Offer> offers;
 
     @OneToMany
+    @JsonManagedReference
     List<Interest> interests;
 
     public Business() {

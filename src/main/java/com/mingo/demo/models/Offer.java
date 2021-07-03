@@ -1,5 +1,7 @@
 package com.mingo.demo.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -14,9 +16,11 @@ public class Offer {
     private String details;
 
     @ManyToMany
+    @JsonBackReference
     private List<User> users;
 
     @ManyToOne
+    @JsonBackReference
     private Business business;
 
     public Offer() {}
