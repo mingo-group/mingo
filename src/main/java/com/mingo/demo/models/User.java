@@ -1,5 +1,8 @@
 package com.mingo.demo.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -17,6 +20,7 @@ public class User {
     private String email;
 
     @Column
+    @JsonIgnore
     private String password;
 
     @Column
@@ -29,7 +33,12 @@ public class User {
     private Float longitude;
 
     @ManyToMany
+    @JsonManagedReference
     private List<Offer> offers;
+
+    @ManyToMany
+    @JsonManagedReference
+    private List<Interest> interests;
 
     public User () {}
 
@@ -95,5 +104,13 @@ public class User {
 
     public void setOffers(List<Offer> offers) {
         this.offers = offers;
+    }
+
+    public List<Interest> getInterests() {
+        return interests;
+    }
+
+    public void setInterests(List<Interest> interests) {
+        this.interests = interests;
     }
 }
