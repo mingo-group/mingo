@@ -20,7 +20,7 @@ public class Message {
     @Column
     private Timestamp sent;
 
-    @Column
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String body;
 
     @Enumerated(EnumType.ORDINAL)

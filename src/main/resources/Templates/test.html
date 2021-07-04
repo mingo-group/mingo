@@ -6,8 +6,10 @@
     <title>Here I Go A Testing Again</title>
 </head>
 <body>
-<h1>If you can read this, I dun goofed up (not really it's just for testing though)</h1>
+<h1>LOOK AT WHAT I NEED TO MIMIC A FRACTION OF THEIR POWER!</h1>
 
+
+<h2>User Creation</h2>
 <form th:action="@{/sign-up}" method="POST" th:object="${user}">
 
     <input th:field="*{username}" placeholder="Username" /><br>
@@ -27,6 +29,8 @@
         <span th:text="${user.latitude}" /> - <span th:text="${user.longitude}" />;</p>
 </div>
 
+<h2>Business Creation</h2>
+
 <form th:action="@{/business/sign-up}" method="POST" th:object="${business}">
 
     <input th:field="*{name}" placeholder="Name" /><br>
@@ -42,6 +46,61 @@
     <p><span th:text="${business.name}" /> -
         <span th:text="${business.latitude}" /> - <span th:text="${business.longitude}" />;</p>
     <p th:text="${business.description}"></p>
+</div>
+
+<h2>Messaging</h2>
+
+<form th:action="@{/message}" method="POST" th:object="${message}">
+<!--<form th:action="@{https://request-inspector.glitch.me/}" method="POST" th:object="${message}">-->
+    <select name="sender">
+        <option th:each="user, iterstat : ${allUsers}" th:value="${user.id}" th:text="${user.username}" />
+    </select>
+
+    <select name="receiver">
+        <option th:each="user, iterstat : ${allUsers}" th:value="${user.id}"><span th:text="${user.username}" /></option>
+    </select>
+
+    <textarea rows="5" cols="100" th:field="*{body}" placeholder="Description of the business" /><br>
+
+    <button>Submit this shit</button>
+
+</form>
+
+<div th:each="message : ${allMessages}">
+    <p><span th:text="${message.sender.username}" /> -
+        <span th:text="${message.receiver.username}" /> - @ <span th:text="${message.sent}" /> -
+        <span th:text="${message.status.toString().toLowerCase()}" /> ;</p>
+    <p th:text="${message.body}"></p>
+</div>
+
+<h2>Category Management</h2>
+
+<form th:action="@{/category-create}" method="POST" th:object="${category}">
+    <input th:field="*{name}" placeholder="Name" /><br>
+    <button>Submit this shit</button>
+</form>
+
+<div th:each="category : ${allCategories}">
+    <p><span th:text="${category.id}" /> -
+        <span th:text="${category.name}" /> ;</p>
+</div>
+
+<h2>Interest Management</h2>
+
+<form th:action="@{/interest-create}" method="POST" th:object="${interest}">
+<!--    <form th:action="@{https://request-inspector.glitch.me/}" method="POST" th:object="${interest}">-->
+    <input th:field="*{name}" placeholder="Name" />
+
+    <select th:field="*{categories}" multiple>
+        <option th:each="category, iterstat : ${allCategories}" th:value="${category.id}" th:text="${category.name}" />
+    </select>
+    <button>Submit this shit</button>
+</form>
+
+<div th:each="interest : ${allInterests}">
+    <p><span th:text="${interest.id}" /> -
+        <span th:text="${interest.name}" /> -
+        <span th:each="category, iter : ${interest.categories}" th:text="!${iter.last} ? ${category.name} + ' - ' : ${category.name}"></span></p>
 </div>
 
 </body>

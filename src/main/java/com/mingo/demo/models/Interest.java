@@ -13,7 +13,7 @@ public class Interest {
     private long id;
 
     @Column
-    private String interest;
+    private String name;
 
     @ManyToMany
     @JsonManagedReference
@@ -37,12 +37,12 @@ public class Interest {
         this.id = id;
     }
 
-    public String getInterest() {
-        return interest;
+    public String getName() {
+        return name;
     }
 
-    public void setInterest(String interest) {
-        this.interest = interest;
+    public void setName(String interest) {
+        this.name = name;
     }
 
     public List<Category> getCategories() {

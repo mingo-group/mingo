@@ -24,7 +24,7 @@ public class Business {
     @Column
     private int businessType;
 
-    @Column(length = 4000)
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String description;
 
     @OneToMany
