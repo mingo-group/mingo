@@ -117,6 +117,7 @@ public class HomeController {
 
     @PostMapping("/interest-create")
     public String interestCreate(@ModelAttribute Interest interest) {
+        System.out.println("interest.getName() = " + interest.getName());
         interestDao.save(interest);
         return "redirect:/test";
     }
@@ -127,6 +128,30 @@ public class HomeController {
         List<Interest> interests = interestDao.findAll();
 
         return interests;
+    }
+
+    @PostMapping("/user-interest")
+    public String interestAddToUser(@RequestParam(value="user") long userid, @RequestParam(value="interest") List<Long> interestsid) {
+        User user = userDao.getById(userid);
+        List<Interest> interests = user.getInterests();
+        for (int i = 0; i < interestsid.size(); i++) {
+            interests.add(interestDao.getById(interestsid.get(i)));
+        }
+        user.setInterests(interests);
+        userDao.save(user);
+        return "redirect:/test";
+    }
+
+    @PostMapping("/business-interest")
+    public String interestAddToBusiness(@RequestParam(value="business") long businessid, @RequestParam(value="interest") List<Long> interestsid) {
+        Business business = businessDao.getById(businessid);
+        List<Interest> interests = business.getInterests();
+        for (int i = 0; i < interestsid.size(); i++) {
+            interests.add(interestDao.getById(interestsid.get(i)));
+        }
+        business.setInterests(interests);
+        businessDao.save(business);
+        return "redirect:/test";
     }
 
 }
