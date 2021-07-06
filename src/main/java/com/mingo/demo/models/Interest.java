@@ -41,7 +41,7 @@ public class Interest {
         return name;
     }
 
-    public void setName(String interest) {
+    public void setName(String name) {
         this.name = name;
     }
 

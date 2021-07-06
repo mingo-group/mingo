@@ -1,5 +1,8 @@
 package com.mingo.demo.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -14,6 +17,7 @@ public class Category {
     private String name;
 
     @ManyToMany
+    @JsonBackReference
     private List<Interest> interests;
 
     public Category() {}

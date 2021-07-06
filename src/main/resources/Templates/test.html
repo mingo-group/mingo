@@ -6,7 +6,7 @@
     <title>Here I Go A Testing Again</title>
 </head>
 <body>
-<h1>LOOK AT WHAT I NEED TO MIMIC A FRACTION OF THEIR POWER!</h1>
+<img src="https://i.kym-cdn.com/entries/icons/original/000/037/360/coverpower.jpg" height="250">
 
 
 <h2>User Creation</h2>
@@ -26,7 +26,8 @@
 <div th:each="user : ${allUsers}">
     <p><span th:text="${user.username}" /> - <span th:text="${user.email}" /> -
         <span th:text="${user.password}" /> - <span th:text="${user.avatar_path}" /> -
-        <span th:text="${user.latitude}" /> - <span th:text="${user.longitude}" />;</p>
+        <span th:text="${user.latitude}" /> - <span th:text="${user.longitude}" />; Interests are:
+        <span th:each="interest, iter : ${user.interests}" th:value="${interest.id}" th:text="!${iter.last} ? ${interest.name} + ' - ' : ${interest.name}" /></p>
 </div>
 
 <h2>Business Creation</h2>
@@ -44,7 +45,8 @@
 
 <div th:each="business : ${allBusinesses}">
     <p><span th:text="${business.name}" /> -
-        <span th:text="${business.latitude}" /> - <span th:text="${business.longitude}" />;</p>
+        <span th:text="${business.latitude}" /> - <span th:text="${business.longitude}" />;
+    Interests are: <span th:each="interest, iter : ${business.interests}" th:value="${interest.id}" th:text="!${iter.last} ? ${interest.name} + ' - ' : ${interest.name}" /></p>
     <p th:text="${business.description}"></p>
 </div>
 
@@ -102,6 +104,39 @@
         <span th:text="${interest.name}" /> -
         <span th:each="category, iter : ${interest.categories}" th:text="!${iter.last} ? ${category.name} + ' - ' : ${category.name}"></span></p>
 </div>
+
+
+<h2>Add interests to users</h2>
+
+<form th:action="@{/user-interest}" method="POST">
+
+    <select name="user">
+        <option th:each="user, iterstat : ${allUsers}" th:value="${user.id}" th:text="${user.username}" />
+    </select>
+
+    <select name="interest" multiple>
+        <option th:each="interest, iterstat : ${allInterests}" th:value="${interest.id}" th:text="${interest.name}" />
+    </select>
+
+    <button>Add interest to user.</button>
+
+</form>
+
+<h2>Add interests to businesses</h2>
+
+<form th:action="@{/business-interest}" method="POST">
+
+    <select name="business">
+        <option th:each="business, iterstat : ${allBusinesses}" th:value="${business.id}" th:text="${business.name}" />
+    </select>
+
+    <select name="interest" multiple>
+        <option th:each="interest, iterstat : ${allInterests}" th:value="${interest.id}" th:text="${interest.name}" />
+    </select>
+
+    <button>Add interest to Business.</button>
+
+</form>
 
 </body>
 </html>
