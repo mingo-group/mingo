@@ -11,6 +11,8 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.OptionalLong;
 
 @Controller
 public class HomeController {
@@ -95,10 +97,20 @@ public class HomeController {
 
     @RequestMapping(value = "/message.json", method = RequestMethod.GET, produces = "application/json")
     public @ResponseBody
-    List<Message> messageSearch() throws Exception {
-        List<Message> messages = messageDao.findAll();
-
+    List<Message> messageSearch(@RequestParam(value="user", required = false) Long userid) throws Exception {
+        if (userid == null) {
+        List <Message> messages = messageDao.findAll();
         return messages;
+        }
+        else {
+        System.out.println("userid = " + userid);
+        User user = userDao.getById(userid);
+//            List<Message> messages = messageDao.findAllBySenderEqualsOrReceiverEqualsOrderBySentDesc(user, user);
+//        List<Message> messages = messageDao.findMessageBySenderEqualsOrderBySentDesc(user);
+        List <Message> messages = messageDao.findMessagesBySenderEqualsOrReceiverEqualsOrderBySentDesc(user, user);
+        System.out.println("messages = " + messages);
+        return messages;
+        }
     }
 
     @PostMapping("/category-create")
@@ -124,14 +136,21 @@ public class HomeController {
 
     @RequestMapping(value = "/interest.json", method = RequestMethod.GET, produces = "application/json")
     public @ResponseBody
-    List<Interest> interstSearch() throws Exception {
+    List<Interest> interestSearch(@RequestParam(value="category", required = false) Long categoryid) throws Exception {
+
+        if (categoryid == null) {
         List<Interest> interests = interestDao.findAll();
 
-        return interests;
+        return interests;}
+        else {
+            List<Interest> interestsByCategory = interestDao.findInterestByCategoriesIsOrderByNameAsc(categoryDao.getById(categoryid));
+            return interestsByCategory;
+        }
     }
 
     @PostMapping("/user-interest")
-    public String interestAddToUser(@RequestParam(value="user") long userid, @RequestParam(value="interest") List<Long> interestsid) {
+    public String interestAddToUser(@RequestParam(value="user") long userid,
+                                    @RequestParam(value="interest") List<Long> interestsid) {
         User user = userDao.getById(userid);
         List<Interest> interests = user.getInterests();
         for (int i = 0; i < interestsid.size(); i++) {
