@@ -27,10 +27,10 @@ public class User {
     private String avatar_path;
 
     @Column
-    private Float latitude;
+    private double latitude;
 
     @Column
-    private Float longitude;
+    private double longitude;
 
     @ManyToMany
     @JsonManagedReference
@@ -82,19 +82,19 @@ public class User {
         this.avatar_path = avatar_path;
     }
 
-    public Float getLatitude() {
+    public Double getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(Float latitude) {
+    public void setLatitude(double latitude) {
         this.latitude = latitude;
     }
 
-    public Float getLongitude() {
+    public Double getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(Float longitude) {
+    public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
 
