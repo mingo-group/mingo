@@ -120,8 +120,6 @@ public class HomeController {
         else {
         System.out.println("userid = " + userid);
         User user = userDao.getById(userid);
-//            List<Message> messages = messageDao.findAllBySenderEqualsOrReceiverEqualsOrderBySentDesc(user, user);
-//        List<Message> messages = messageDao.findMessageBySenderEqualsOrderBySentDesc(user);
         List <Message> messages = messageDao.findMessagesBySenderEqualsOrReceiverEqualsOrderBySentDesc(user, user);
         for (int i = 0; i< messages.size(); i++) {
             messages.get(i).setStatus(MessageStatus.UNREAD);

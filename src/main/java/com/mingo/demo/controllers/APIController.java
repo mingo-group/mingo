@@ -82,15 +82,17 @@ public class APIController {
     }
 
     @PostMapping("/message-api")
-    public String messageSend(@ModelAttribute Message message,
+    public ResponseEntity<String> messageSendAPI(@ModelAttribute Message message,
                               @RequestParam(value="sender") long sender,
-                              @RequestParam(value="receiver") long receiver) {
+                              @RequestParam(value="receiver") long receiver,
+                              @RequestParam(value="body") String body) {
         message.setSender(userDao.getById(sender));
         message.setReceiver(userDao.getById(receiver));
         message.setSent(Timestamp.from(Instant.now()));
+        message.setBody(body);
         message.setStatus(MessageStatus.DELIVERED);
         messageDao.save(message);
-        return "redirect:/test";
+        return new ResponseEntity<String> ("Post created.", HttpStatus.OK);
     }
 
 }
@@ -101,3 +103,4 @@ public class APIController {
 //curl -d 'username=fooforreal3&na' http://localhost:8080/user-add
 //curl -d 'username=fooforreal4&na' http://localhost:8080/user-add
 //curl -d 'business=2&interest=8' http://localhost:8080/business-interest
+//curl -d 'user=2&interest=8' http://localhost:8080/user-interest
