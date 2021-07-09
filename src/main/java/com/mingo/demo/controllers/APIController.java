@@ -56,6 +56,20 @@ public class APIController {
         return new ResponseEntity<String> ("New user created with id: " + user.getUsername(), HttpStatus.OK);
     }
 
+    @PostMapping("/business-add")
+    public ResponseEntity<String> bussinessAdd(@RequestParam(value="name") String name,
+                                               @RequestParam(value="description") String description,
+                                               @RequestParam(value="latitude") Double latitude,
+                                               @RequestParam(value="longitude") Double longitude) {
+        Business business = new Business();
+        business.setName(name);
+        business.setDescription(description);
+        business.setLatitude(latitude);
+        business.setLongitude(longitude);
+
+        return new ResponseEntity<String> ("New business created with name: " + business.getName(), HttpStatus.OK);
+    }
+
     @PostMapping("/user-interest")
     public ResponseEntity<String> interestAddToUser(@RequestParam(value="user") long userid,
                                     @RequestParam(value="interest") List<Long> interestsid) {
