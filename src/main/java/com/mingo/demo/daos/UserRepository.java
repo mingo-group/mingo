@@ -10,5 +10,6 @@ import java.util.List;
 public interface UserRepository extends JpaRepository<User, Long> {
     List<User> findUsersByInterestsEqualsOrderByUsernameAsc(Interest interest);
     List<User> findUsersByInterestsEqualsAndOffersEqualsOrderByUsernameAsc (Interest interest, Offer offer);
+    List<User> findUsersByLatitudeGreaterThanEqualAndLatitudeIsLessThanEqualAndLongitudeIsGreaterThanEqualAndLongitudeIsLessThanEqual(Double lattitudeLowerbound, Double latitudeUpperbound, Double  longitudeLowerbound, Double longitudeUpperbound);
 
 }
