@@ -184,4 +184,22 @@ public class HomeController {
         return users;
     }
 
+    @RequestMapping(value = "/geographic.business.json", method = RequestMethod.GET, produces = "application/json")
+    public @ResponseBody
+    List<Business> geographicBusinessSearch(@RequestParam(value="latitude") Double lattitudeCenter,
+                                    @RequestParam(value="longitude") Double longitudeCenter,
+                                    @RequestParam(value="radius") Double radiusCenter
+    ) throws Exception {
+        Double latitudeLowerbound = lattitudeCenter-radiusCenter;
+        System.out.println("lattitudeLowerbound = " + latitudeLowerbound);
+        Double latitudeUpperbound = lattitudeCenter+radiusCenter;
+        System.out.println("latitudeUpperbound = " + latitudeUpperbound);
+        Double longitudeLowerBound = longitudeCenter-radiusCenter;
+        System.out.println("longitudeLowerBound = " + longitudeLowerBound);
+        Double longitudeUpperbound = longitudeCenter+radiusCenter;
+        System.out.println("longitudeUpperbound = " + longitudeUpperbound);
+        List <Business> businesses = businessDao.findBusinessesByLatitudeGreaterThanEqualAndLatitudeIsLessThanEqualAndLongitudeIsGreaterThanEqualAndLongitudeIsLessThanEqual(latitudeLowerbound, latitudeUpperbound, longitudeLowerBound, longitudeUpperbound);
+
+        return businesses;
+    }
 }
