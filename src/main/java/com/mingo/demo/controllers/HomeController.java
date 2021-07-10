@@ -165,6 +165,23 @@ public class HomeController {
         }
     }
 
+    @RequestMapping(value = "/geographic.users.json", method = RequestMethod.GET, produces = "application/json")
+    public @ResponseBody
+    List<User> geographicUserSearch(@RequestParam(value="latitude") Double lattitudeCenter,
+                              @RequestParam(value="longitude") Double longitudeCenter,
+                              @RequestParam(value="radius") Double radiusCenter
+                              ) throws Exception {
+        Double latitudeLowerbound = lattitudeCenter-radiusCenter;
+        System.out.println("lattitudeLowerbound = " + latitudeLowerbound);
+        Double latitudeUpperbound = lattitudeCenter+radiusCenter;
+        System.out.println("latitudeUpperbound = " + latitudeUpperbound);
+        Double longitudeLowerBound = longitudeCenter-radiusCenter;
+        System.out.println("longitudeLowerBound = " + longitudeLowerBound);
+        Double longitudeUpperbound = longitudeCenter+radiusCenter;
+        System.out.println("longitudeUpperbound = " + longitudeUpperbound);
+        List <User> users = userDao.findUsersByLatitudeGreaterThanEqualAndLatitudeIsLessThanEqualAndLongitudeIsGreaterThanEqualAndLongitudeIsLessThanEqual(latitudeLowerbound, latitudeUpperbound, longitudeLowerBound, longitudeUpperbound);
 
+        return users;
+    }
 
 }
