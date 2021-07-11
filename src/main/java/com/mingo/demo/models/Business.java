@@ -35,6 +35,9 @@ public class Business {
     @JsonManagedReference
     List<Interest> interests;
 
+    @Transient
+    private double distance;
+
     public Business() {
     }
 
@@ -100,5 +103,13 @@ public class Business {
 
     public void setInterests(List<Interest> interests) {
         this.interests = interests;
+    }
+
+    public double getDistance() {
+        return distance;
+    }
+
+    public void setDistance(double distance) {
+        this.distance = distance;
     }
 }

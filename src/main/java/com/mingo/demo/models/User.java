@@ -40,6 +40,9 @@ public class User {
     @JsonManagedReference
     private List<Interest> interests;
 
+    @Transient
+    private double distance;
+
     public User () {}
 
     public long getId() {
@@ -112,5 +115,13 @@ public class User {
 
     public void setInterests(List<Interest> interests) {
         this.interests = interests;
+    }
+
+    public double getDistance() {
+        return distance;
+    }
+
+    public void setDistance(double distance) {
+        this.distance = distance;
     }
 }
