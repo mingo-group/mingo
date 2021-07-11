@@ -1,5 +1,6 @@
 package com.mingo.demo.controllers;
 
+import com.mingo.demo.Services.Haversine;
 import com.mingo.demo.daos.*;
 import com.mingo.demo.models.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -168,8 +169,10 @@ public class HomeController {
     @RequestMapping(value = "/geographic.users.json", method = RequestMethod.GET, produces = "application/json")
     public @ResponseBody
     List<User> geographicUserSearch(@RequestParam(value="latitude") Double lattitudeCenter,
-                              @RequestParam(value="longitude") Double longitudeCenter,
-                              @RequestParam(value="radius") Double radiusCenter
+                                    @RequestParam(value="longitude") Double longitudeCenter,
+                                    @RequestParam(value="radius") Double radiusCenter,
+                                    @RequestParam(value="user", required = false) Long userID,
+                                    @RequestParam(value="business", required = false) Long businessID
                               ) throws Exception {
         Double latitudeLowerbound = lattitudeCenter-radiusCenter;
         System.out.println("lattitudeLowerbound = " + latitudeLowerbound);
@@ -180,6 +183,23 @@ public class HomeController {
         Double longitudeUpperbound = longitudeCenter+radiusCenter;
         System.out.println("longitudeUpperbound = " + longitudeUpperbound);
         List <User> users = userDao.findUsersByLatitudeGreaterThanEqualAndLatitudeIsLessThanEqualAndLongitudeIsGreaterThanEqualAndLongitudeIsLessThanEqual(latitudeLowerbound, latitudeUpperbound, longitudeLowerBound, longitudeUpperbound);
+        if (userID != null) {
+            User user = userDao.getById(userID);
+            for (int i = 0; i < users.size(); i++) {
+                User currentUser = users.get(i);
+                currentUser.setDistance(Haversine.calculateDistanceBetweenTwoLatLngsReturnInMiles(user.getLatitude(), user.getLongitude(), currentUser.getLatitude(), currentUser.getLongitude()));
+                users.set(i, currentUser);
+            }
+        }
+        if (businessID != null) {
+            Business business = businessDao.getById(businessID);
+            for (int i = 0; i < users.size(); i++) {
+                User currentUser = users.get(i);
+                currentUser.setDistance(Haversine.calculateDistanceBetweenTwoLatLngsReturnInMiles(business.getLatitude(), business.getLongitude(), currentUser.getLatitude(), currentUser.getLongitude()));
+                users.set(i, currentUser);
+            }
+        }
+
 
         return users;
     }
@@ -188,7 +208,8 @@ public class HomeController {
     public @ResponseBody
     List<Business> geographicBusinessSearch(@RequestParam(value="latitude") Double lattitudeCenter,
                                     @RequestParam(value="longitude") Double longitudeCenter,
-                                    @RequestParam(value="radius") Double radiusCenter
+                                    @RequestParam(value="radius") Double radiusCenter,
+                                    @RequestParam(value="user", required = false) Long userID
     ) throws Exception {
         Double latitudeLowerbound = lattitudeCenter-radiusCenter;
         System.out.println("lattitudeLowerbound = " + latitudeLowerbound);
@@ -199,7 +220,14 @@ public class HomeController {
         Double longitudeUpperbound = longitudeCenter+radiusCenter;
         System.out.println("longitudeUpperbound = " + longitudeUpperbound);
         List <Business> businesses = businessDao.findBusinessesByLatitudeGreaterThanEqualAndLatitudeIsLessThanEqualAndLongitudeIsGreaterThanEqualAndLongitudeIsLessThanEqual(latitudeLowerbound, latitudeUpperbound, longitudeLowerBound, longitudeUpperbound);
-
+        if (userID != null) {
+            User user = userDao.getById(userID);
+            for (int i = 0; i < businesses.size(); i++) {
+                Business currentBusiness = businesses.get(i);
+                currentBusiness.setDistance(Haversine.calculateDistanceBetweenTwoLatLngsReturnInMiles(user.getLatitude(), user.getLongitude(), currentBusiness.getLatitude(), currentBusiness.getLongitude()));
+                businesses.set(i, currentBusiness);
+            }
+        }
         return businesses;
     }
 }
