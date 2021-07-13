@@ -25,11 +25,28 @@ public class Haversine {
         double c = 2 * Math.asin(Math.sqrt(a));
         return rad * c;
     }
-//    public static List<Double>  givenLatLongAndBearingAndRangeReturnNewLatLong(double lat1,
-//                                                                               double long1,
-//                                                                               double bearing,
-//                                                                               double range) {
-//        return
-//    }
+    public static Double  givenLatLongAndRadiusReturnNorthernBound(double lat1,
+                                                                               double long1,
+                                                                               double radius) {
+        return lat1+radius;
+    }
+
+    public static Double  givenLatLongAndRadiusReturnSouthernBound(double lat1,
+                                                                double long1,
+                                                                double radius) {
+        return lat1-radius;
+    }
+
+    public static Double  givenLatLongAndRadiusReturnWesternBound(double lat1,
+                                                                double long1,
+                                                                double radius) {
+        return long1+radius;
+    }
+
+    public static Double  givenLatLongAndRadiusReturnEasternBound(double lat1,
+                                                                  double long1,
+                                                                  double radius) {
+        return long1-radius;
+    }
 
 }
