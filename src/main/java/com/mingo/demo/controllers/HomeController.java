@@ -25,10 +25,19 @@ public class HomeController {
     @Autowired private CategoryRepository categoryDao;
     @Autowired private InterestRepository interestDao;
 
+//    This / mapping is almost exclusively to check that the server is running. It could be modified to display anything.
+
     @GetMapping("/")
     public String hello() {
         return "home";
     }
+
+//    In the early parts of creating this backend, I used the /test pathway to test read/write functionality
+//    and ensure that the pathways were working correctly and the database was well formed.
+
+//    It's probably vestigal and could be deleted but it is a convenient way of getting an update
+//    on what's in the database at this point. It (along with all the non-JSON returning methods, and non 200-OK returning
+//    Post methods, can be safely deleted without compromising the functionality of the backend.
 
     @GetMapping("/test")
     public String test(Model model) {
@@ -56,12 +65,18 @@ public class HomeController {
         return "test";
     }
 
+//    This Post mapping could be commented out or deleted once the front-end writes to the  REST method
     @PostMapping("/sign-up")
     public String signUp(@ModelAttribute User user) {
         userDao.save(user);
         return "redirect:/test";
     }
 
+//    Despite the fact that it won't print passwords, there's probably a MUCH more secure way to implement
+//    this; this is almost exclusively for MVP purposes and to demonstrate technical functionality.
+
+//    The actual production version would need API key protection, and some way to limit the returns based
+//    on 'who' was generating the query.
 
     @RequestMapping(value = "/user.json", method = RequestMethod.GET, produces = "application/json")
     public @ResponseBody
@@ -86,12 +101,15 @@ public class HomeController {
         }
     }
 
+    //    This Post mapping could be commented out or deleted once the front-end writes to the  REST method
     @PostMapping("/business/sign-up")
     public String signUpBusiness(@ModelAttribute Business business) {
         businessDao.save(business);
 
         return "redirect:/test";
     }
+
+
 
     @RequestMapping(value = "/business.json", method = RequestMethod.GET, produces = "application/json")
     public @ResponseBody
@@ -101,6 +119,7 @@ public class HomeController {
         return businesses;
     }
 
+//    This Post mapping could be commented out or deleted once the front-end writes to the  REST method
     @PostMapping("/message")
     public String messageSend(@ModelAttribute Message message, @RequestParam(value="sender") long sender, @RequestParam(value="receiver") long receiver) {
         message.setSender(userDao.getById(sender));
@@ -111,6 +130,8 @@ public class HomeController {
         return "redirect:/test";
     }
 
+// Again, the security concerns of anyone, at any time, pulling messages meant or from any user is not
+//    lost on me, but this is an MVP product not meant for production.
     @RequestMapping(value = "/message.json", method = RequestMethod.GET, produces = "application/json")
     public @ResponseBody
     List<Message> messageSearch(@RequestParam(value="user", required = false) Long userid) throws Exception {
@@ -131,6 +152,7 @@ public class HomeController {
         }
     }
 
+    //    This Post mapping could be commented out or deleted once the front-end writes to the  REST method
     @PostMapping("/category-create")
     public String categoryCreate(@ModelAttribute Category category) {
         categoryDao.save(category);
@@ -145,6 +167,7 @@ public class HomeController {
         return categories;
     }
 
+//    This Post mapping could be commented out or deleted once the front-end writes to the  REST method
     @PostMapping("/interest-create")
     public String interestCreate(@ModelAttribute Interest interest) {
         System.out.println("interest.getName() = " + interest.getName());
@@ -166,6 +189,12 @@ public class HomeController {
         }
     }
 
+
+//This is not quite feature complete - the methodology exists in the Haversine formula service to
+// to convert lat/long into distances, but I haven't implemented the other part (converting a 'mile' radius
+// into two 'lat-long' pairs representing a box that MySQL can search in.
+
+//    That said, this methodology isn't very far.
     @RequestMapping(value = "/geographic.users.json", method = RequestMethod.GET, produces = "application/json")
     public @ResponseBody
     List<User> geographicUserSearch(@RequestParam(value="latitude") Double lattitudeCenter,

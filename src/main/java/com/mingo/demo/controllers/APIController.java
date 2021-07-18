@@ -18,7 +18,12 @@ import java.util.OptionalLong;
 
 @Controller
 public class APIController {
+// The API controller, for the most part, implements the Post methods that were already
+// implemented on the Home controller, but does so RESTfully.
 
+// Again, this implementation does NOT feature API keys, so anyone can add or modify
+// entries, even without being 'in' the Mingo front-end, and this should be exactly
+// as concerning from a security perspective as it sounds.
 
     @Autowired
     private UserRepository userDao;
@@ -111,6 +116,9 @@ public class APIController {
 
 }
 
+
+// These commands can be used to test functionality of different add and search methods,
+// you might have to update them for your particular setup if Mingo isn't running on localhost
 //curl -d 'username=fooforreal&email=fooforreal@foo.com' http://localhost:8080/user-add
 //curl -d 'username=fooforreal1&email=fooforreal1@food.com&password=password' http://localhost:8080/user-add
 //curl -d 'username=fooforreal2&na' http://localhost:8080/user-add

@@ -28,6 +28,8 @@ public class Haversine {
     public static Double  givenLatLongAndRadiusReturnNorthernBound(double lat1,
                                                                                double long1,
                                                                                double radius) {
+
+
         return lat1+radius;
     }
 
