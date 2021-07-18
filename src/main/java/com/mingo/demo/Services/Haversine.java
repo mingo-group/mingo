@@ -2,7 +2,11 @@ package com.mingo.demo.Services;
 
 import java.util.List;
 
-// Java program for the haversine formula
+// Java program for the haversine formula - this is the formula that calculates the
+// distance in miles between two latitude and longitudes.
+
+// big freaking hint - if you want to change the units that it returns in,  change the units
+// of the earth's radius where it appears.
 public class Haversine {
 
     public static double calculateDistanceBetweenTwoLatLngsReturnInMiles(
@@ -25,30 +29,39 @@ public class Haversine {
         double c = 2 * Math.asin(Math.sqrt(a));
         return rad * c;
     }
-    public static Double  givenLatLongAndRadiusReturnNorthernBound(double lat1,
+
+//    Each of these basically takes a distance and calculates the Northern, Southern,
+//    Eastern or Western bound for the search box.
+    public static Double  givenLatLongAndRadiusInMilesReturnNorthernBound(double lat1,
                                                                                double long1,
                                                                                double radius) {
+        double earthRadius = 3958.8;
 
 
-        return lat1+radius;
+        return lat1 + (radius/earthRadius * (180.0 / Math.PI));
     }
 
-    public static Double  givenLatLongAndRadiusReturnSouthernBound(double lat1,
+    public static Double  givenLatLongAndRadiusInMilesReturnSouthernBound(double lat1,
                                                                 double long1,
                                                                 double radius) {
-        return lat1-radius;
+        double earthRadius = 3958.8;
+        return lat1 - (radius/earthRadius * (180 / Math.PI));
     }
 
-    public static Double  givenLatLongAndRadiusReturnWesternBound(double lat1,
+    public static Double  givenLatLongAndRadiusInMilesReturnWesternBound(double lat1,
                                                                 double long1,
                                                                 double radius) {
-        return long1+radius;
+        double earthRadius = 3958.8;
+        double earthRadiusAtGivenLatitude = earthRadius * Math.cos(Math.toRadians(lat1));
+        return long1 + (radius/earthRadiusAtGivenLatitude * (180 / Math.PI));
     }
 
-    public static Double  givenLatLongAndRadiusReturnEasternBound(double lat1,
+    public static Double  givenLatLongAndRadiusInMilesReturnEasternBound(double lat1,
                                                                   double long1,
                                                                   double radius) {
-        return long1-radius;
+        double earthRadius = 3958.8;
+        double earthRadiusAtGivenLatitude = earthRadius * Math.cos(Math.toRadians(lat1));
+        return long1 - (radius/earthRadiusAtGivenLatitude * (180 / Math.PI));
     }
 
 }

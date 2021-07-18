@@ -18,6 +18,9 @@ import java.util.OptionalLong;
 @Controller
 public class HomeController {
 
+// The HomeController maps most of the 'plain' HTML Post methods, the only 'plain' HTML get method,
+// and all GET methods that return JSONs restfully. There's no particular reason they couldn't be divided
+// up differently or more logically - I just prefer fewer Controller files.
 
     @Autowired private UserRepository userDao;
     @Autowired private BusinessRepository businessDao;
@@ -190,28 +193,43 @@ public class HomeController {
     }
 
 
-//This is not quite feature complete - the methodology exists in the Haversine formula service to
-// to convert lat/long into distances, but I haven't implemented the other part (converting a 'mile' radius
-// into two 'lat-long' pairs representing a box that MySQL can search in.
+// This is maybe my favorite part of the code - the Haversine formula is not the most accurate way
+// to simulate the Earth's surface for calculating distances and lat/longs, since it treats the Earth
+// as a perfect sphere instead of an ellipsoid, but for a brand new Dev with no real math background
+// and no experience working in geolocation I thought it was alright.
 
-//    That said, this methodology isn't very far.
+// These controllers take a couple arguments - the 'latitudeCenter' and 'longitudeCenter' determine the
+// center point of search, the radius will take any number of miles, and any userID or businessID is used to
+// calculate the distance FROM THAT USER OR BUSINESS.
+
+// Also note that these take a 'box' approach to the radius - at the 'corners' of the box in the NorthEast,
+// SouthEast, SouthWest, and NorthWest there will be returns that are radius * sqrt(2) away. I considered
+// implementing a 'strict' flag that would first get a return for the box and then do the Haversine formula
+// on each return, removing return items that were further than radius away...but this is an MVP product
+// and I wasn't sure the juice was worth the squeeze. If I'd worked on it for another two weeks that would've
+// probably been the next feature.
     @RequestMapping(value = "/geographic.users.json", method = RequestMethod.GET, produces = "application/json")
     public @ResponseBody
-    List<User> geographicUserSearch(@RequestParam(value="latitude") Double lattitudeCenter,
+    List<User> geographicUserSearch(@RequestParam(value="latitude") Double latitudeCenter,
                                     @RequestParam(value="longitude") Double longitudeCenter,
                                     @RequestParam(value="radius") Double radiusCenter,
                                     @RequestParam(value="user", required = false) Long userID,
                                     @RequestParam(value="business", required = false) Long businessID
                               ) throws Exception {
-        Double latitudeLowerbound = lattitudeCenter-radiusCenter;
+//        First we get the 'bounds' of our search box so that MySQL will be able to do the search for us.
+        Double latitudeLowerbound = Haversine.givenLatLongAndRadiusInMilesReturnSouthernBound(latitudeCenter, longitudeCenter, radiusCenter);
         System.out.println("lattitudeLowerbound = " + latitudeLowerbound);
-        Double latitudeUpperbound = lattitudeCenter+radiusCenter;
+        Double latitudeUpperbound = Haversine.givenLatLongAndRadiusInMilesReturnNorthernBound(latitudeCenter, longitudeCenter, radiusCenter);
         System.out.println("latitudeUpperbound = " + latitudeUpperbound);
-        Double longitudeLowerBound = longitudeCenter-radiusCenter;
+        Double longitudeLowerBound = Haversine.givenLatLongAndRadiusInMilesReturnEasternBound(latitudeCenter, longitudeCenter, radiusCenter);
         System.out.println("longitudeLowerBound = " + longitudeLowerBound);
-        Double longitudeUpperbound = longitudeCenter+radiusCenter;
+        Double longitudeUpperbound = Haversine.givenLatLongAndRadiusInMilesReturnWesternBound(latitudeCenter, longitudeCenter, radiusCenter);
         System.out.println("longitudeUpperbound = " + longitudeUpperbound);
+//        Then we let MySQL search for any Users within our geographic coordinates
         List <User> users = userDao.findUsersByLatitudeGreaterThanEqualAndLatitudeIsLessThanEqualAndLongitudeIsGreaterThanEqualAndLongitudeIsLessThanEqual(latitudeLowerbound, latitudeUpperbound, longitudeLowerBound, longitudeUpperbound);
+//        If there is a userID, we determine the distance from their (last reported) position
+//        The methodology is the same for userId, businessId, or no ID = loop through, for each
+//        return on the list, measure the distance, then save it back to the list in the same position it was
         if (userID != null) {
             User user = userDao.getById(userID);
             for (int i = 0; i < users.size(); i++) {
@@ -220,6 +238,9 @@ public class HomeController {
                 users.set(i, currentUser);
             }
         }
+//        If there is a businessID, we determine the distance from their (last reported) position.
+//        Note that because of the order, if we received both a business and a user ID, the distance
+//        returned will be for the business.
         if (businessID != null) {
             Business business = businessDao.getById(businessID);
             for (int i = 0; i < users.size(); i++) {
@@ -228,25 +249,35 @@ public class HomeController {
                 users.set(i, currentUser);
             }
         }
+//        if neither business or user ID included, get the distance from the search point.
+        if (businessID == null && userID == null) {
+            for (int i = 0; i < users.size(); i++) {
+                User currentUser = users.get(i);
+                currentUser.setDistance(Haversine.calculateDistanceBetweenTwoLatLngsReturnInMiles(latitudeCenter,longitudeCenter, currentUser.getLatitude(), currentUser.getLongitude()));
+                users.set(i, currentUser);
+            }
+        }
 
-
+// Adding a sort before the return is an obvious function that I didn't do - just never bothered with it.
+// Distance would be an obvious choice. Again - meh.
         return users;
     }
 
+// This function is structured identically to the above; if you walk through the other one you'll get this one.
     @RequestMapping(value = "/geographic.business.json", method = RequestMethod.GET, produces = "application/json")
     public @ResponseBody
-    List<Business> geographicBusinessSearch(@RequestParam(value="latitude") Double lattitudeCenter,
+    List<Business> geographicBusinessSearch(@RequestParam(value="latitude") Double latitudeCenter,
                                     @RequestParam(value="longitude") Double longitudeCenter,
                                     @RequestParam(value="radius") Double radiusCenter,
                                     @RequestParam(value="user", required = false) Long userID
     ) throws Exception {
-        Double latitudeLowerbound = lattitudeCenter-radiusCenter;
+        Double latitudeLowerbound = Haversine.givenLatLongAndRadiusInMilesReturnSouthernBound(latitudeCenter, longitudeCenter, radiusCenter);
         System.out.println("lattitudeLowerbound = " + latitudeLowerbound);
-        Double latitudeUpperbound = lattitudeCenter+radiusCenter;
+        Double latitudeUpperbound = Haversine.givenLatLongAndRadiusInMilesReturnNorthernBound(latitudeCenter, longitudeCenter, radiusCenter);
         System.out.println("latitudeUpperbound = " + latitudeUpperbound);
-        Double longitudeLowerBound = longitudeCenter-radiusCenter;
+        Double longitudeLowerBound = Haversine.givenLatLongAndRadiusInMilesReturnEasternBound(latitudeCenter, longitudeCenter, radiusCenter);
         System.out.println("longitudeLowerBound = " + longitudeLowerBound);
-        Double longitudeUpperbound = longitudeCenter+radiusCenter;
+        Double longitudeUpperbound = Haversine.givenLatLongAndRadiusInMilesReturnWesternBound(latitudeCenter, longitudeCenter, radiusCenter);
         System.out.println("longitudeUpperbound = " + longitudeUpperbound);
         List <Business> businesses = businessDao.findBusinessesByLatitudeGreaterThanEqualAndLatitudeIsLessThanEqualAndLongitudeIsGreaterThanEqualAndLongitudeIsLessThanEqual(latitudeLowerbound, latitudeUpperbound, longitudeLowerBound, longitudeUpperbound);
         if (userID != null) {
@@ -254,6 +285,14 @@ public class HomeController {
             for (int i = 0; i < businesses.size(); i++) {
                 Business currentBusiness = businesses.get(i);
                 currentBusiness.setDistance(Haversine.calculateDistanceBetweenTwoLatLngsReturnInMiles(user.getLatitude(), user.getLongitude(), currentBusiness.getLatitude(), currentBusiness.getLongitude()));
+                businesses.set(i, currentBusiness);
+            }
+        }
+
+        if (userID == null) {
+            for (int i = 0; i < businesses.size(); i++) {
+                Business currentBusiness = businesses.get(i);
+                currentBusiness.setDistance(Haversine.calculateDistanceBetweenTwoLatLngsReturnInMiles(latitudeCenter, longitudeCenter, currentBusiness.getLatitude(), currentBusiness.getLongitude()));
                 businesses.set(i, currentBusiness);
             }
         }
