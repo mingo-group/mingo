@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+
+  myapp-mysql:
+    image: mysql:8.0
+#    volumes:
+#      - "./volumes/mysql:/var/lib/mysql/data"
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootietootie
+      - MYSQL_DATABASE=blog_db
+      - MYSQL_USER=mingo_user
+      - MYSQL_PASSWORD=oginmoorwhatever
+    ports:
+      - 3307:3306
+#    networks:
+#      - my_network
+
+  myapp-main:
+    image: tedmccormick/mingo:demo0.0.1
+    restart: on-failure
+    depends_on:
+      - myapp-mysql
+    volumes:
+      - /app
+    ports:
+      - 8085:8080
+#    networks:
+#      - my_network
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://myapp-mysql:3306/blog_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: rootietootie
+#
+#  network:
+#    my_network:
