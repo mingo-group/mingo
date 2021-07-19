@@ -27,6 +27,7 @@ public class HomeController {
     @Autowired private MessageRepository messageDao;
     @Autowired private CategoryRepository categoryDao;
     @Autowired private InterestRepository interestDao;
+    @Autowired private OfferRepository offerDao;
 
 //    This / mapping is almost exclusively to check that the server is running. It could be modified to display anything.
 
@@ -298,4 +299,25 @@ public class HomeController {
         }
         return businesses;
     }
+
+
+    @RequestMapping(value = "/offers.json", method = RequestMethod.GET, produces = "application/json")
+    public @ResponseBody
+    List<Offer> geographicBusinessSearch(@RequestParam(value="user", required = false) Long userID,
+                                            @RequestParam(value="business", required = false) Long businessID
+
+    ) throws Exception {
+        List<Offer> offers = offerDao.findAll();
+
+        if (userID != null) {
+            offers = userDao.getById(userID).getOffers();
+        }
+
+        if (businessID != null) {
+            offers = businessDao.getById(businessID).getOffers();
+        }
+        return offers;
+    }
 }
+
+
