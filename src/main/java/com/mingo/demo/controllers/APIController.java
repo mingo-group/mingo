@@ -35,6 +35,10 @@ public class APIController {
     private CategoryRepository categoryDao;
     @Autowired
     private InterestRepository interestDao;
+    @Autowired
+    private OfferRepository offerDao;
+    @Autowired
+    private VisitRepository visitDao;
 
     @PostMapping("/user-add")
     public @ResponseBody ResponseEntity<String> userAdd(@RequestParam(value="username", required = false) String username,
@@ -112,6 +116,66 @@ public class APIController {
         message.setStatus(MessageStatus.DELIVERED);
         messageDao.save(message);
         return new ResponseEntity<String> ("Post created.", HttpStatus.OK);
+    }
+
+    @PostMapping("/offer-api")
+    public ResponseEntity<String> offerAddAPI(
+                                                 @RequestParam(value="details") String details,
+                                                 @RequestParam(value="users") List<Long> userIDs,
+                                                 @RequestParam(value="business") Long businessID) {
+        Offer offer = new Offer();
+        offer.setDetails(details);
+        offer.setBusiness(businessDao.getById(businessID));
+        List<User> users = new ArrayList<>();
+        for (int i = 0; i < userIDs.size(); i++) {
+            users.add(userDao.getById(userIDs.get(i)));
+        }
+        offer.setUsers(users);
+        offerDao.save(offer);
+        return new ResponseEntity<String> ("Offer created.", HttpStatus.OK);
+    }
+
+    @PostMapping("/visit-api")
+    public ResponseEntity<String> visitAddAPI(
+            @RequestParam(value="user") Long userID,
+            @RequestParam(value="business") Long businessID,
+            @RequestParam(value="offer", required = false) Long offerID,
+            @RequestParam(value="start", required = false) Timestamp start,
+            @RequestParam(value="end", required = false) Timestamp end
+            ) {
+        Visit visit = new Visit();
+        visit.setBusiness(businessDao.getById(businessID));
+        visit.setUser(userDao.getById(userID));
+        if (start != null) {
+            visit.setStart(start);
+        }
+        else {
+            visit.setStart(Timestamp.from(Instant.now()));
+        }
+        if (end != null) {
+            visit.setEnd(end);
+        }
+        if (offerID != null) {
+            visit.setOffer(offerDao.getById(offerID));
+        }
+        visitDao.save(visit);
+
+        return new ResponseEntity<String> ("Visit created; visit id =" + visit.getId(), HttpStatus.OK);
+    }
+
+    @PutMapping("/visitend-api")
+    public ResponseEntity<String> visitEndSaveAPI(
+            @RequestParam(value="visit") Long visitID,
+            @RequestParam(value="end", required = false) Timestamp end) {
+        Visit visit = visitDao.getById(visitID);
+        if (end != null) {
+            visit.setEnd(end);
+        }
+        else {
+            visit.setEnd(Timestamp.from(Instant.now()));
+        }
+        visitDao.save(visit);
+        return new ResponseEntity<String> ("Offer created.", HttpStatus.OK);
     }
 
 }
