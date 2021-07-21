@@ -28,6 +28,7 @@ public class HomeController {
     @Autowired private CategoryRepository categoryDao;
     @Autowired private InterestRepository interestDao;
     @Autowired private OfferRepository offerDao;
+    @Autowired private VisitRepository visitDao;
 
 //    This / mapping is almost exclusively to check that the server is running. It could be modified to display anything.
 
@@ -303,10 +304,10 @@ public class HomeController {
 
     @RequestMapping(value = "/offers.json", method = RequestMethod.GET, produces = "application/json")
     public @ResponseBody
-    List<Offer> geographicBusinessSearch(@RequestParam(value="user", required = false) Long userID,
-                                            @RequestParam(value="business", required = false) Long businessID
+    List<Offer> offerSearch(@RequestParam(value="user", required = false) Long userID,
+                                         @RequestParam(value="business", required = false) Long businessID
 
-    ) throws Exception {
+            ) throws Exception {
         List<Offer> offers = offerDao.findAll();
 
         if (userID != null) {
@@ -317,6 +318,24 @@ public class HomeController {
             offers = businessDao.getById(businessID).getOffers();
         }
         return offers;
+    }
+
+    @RequestMapping(value = "/visit.json", method = RequestMethod.GET, produces = "application/json")
+    public @ResponseBody
+    List<Visit> visitSearch(@RequestParam(value="user", required = false) Long userID,
+                                         @RequestParam(value="business", required = false) Long businessID
+
+    ) throws Exception {
+        List<Visit> visits = visitDao.findAll();
+
+        if (userID != null) {
+            visits = visitDao.findAllByUserEqualsOrderByStartAsc(userDao.getById(userID));
+        }
+
+        if (businessID != null) {
+            visits = visitDao.findAllByBusinessOrderByStartAsc(businessDao.getById(businessID));
+        }
+        return visits;
     }
 }
 
