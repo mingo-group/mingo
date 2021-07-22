@@ -41,14 +41,19 @@ public class APIController {
     private VisitRepository visitDao;
 
     @PostMapping("/user-add")
-    public @ResponseBody ResponseEntity<String> userAdd(@RequestParam(value="username", required = false) String username,
+    public @ResponseBody ResponseEntity<String> userAdd(@RequestParam(value="id", required = false) Long userid,
+                                                        @RequestParam(value="username", required = false) String username,
                                                         @RequestParam(value="email", required = false) String email,
                                                         @RequestParam(value="password", required = false) String password,
                                                         @RequestParam(value="avatarPath", required = false) String avatarPath,
                                                         @RequestParam(value="latitude", required = false) Double latitude,
                                                         @RequestParam(value="longitude", required = false) Double longitude,
                                                         @RequestParam(value="interests", required = false) List<Long> interests) {
+
         User user = new User();
+        if (userid != null) {
+            user.setId(userid);
+        }
         if (username != null) {user.setUsername(username);}
         if(email != null) {user.setEmail(email);}
         if (password != null) {user.setPassword(password);}
@@ -66,11 +71,15 @@ public class APIController {
     }
 
     @PostMapping("/business-add")
-    public ResponseEntity<String> bussinessAdd(@RequestParam(value="name") String name,
+    public ResponseEntity<String> bussinessAdd(@RequestParam(value ="id", required = false) Long businessID,
+                                               @RequestParam(value="name") String name,
                                                @RequestParam(value="description") String description,
                                                @RequestParam(value="latitude") Double latitude,
                                                @RequestParam(value="longitude") Double longitude) {
         Business business = new Business();
+        if (businessID != null) {
+            business.setId(businessID);
+        }
         business.setName(name);
         business.setDescription(description);
         business.setLatitude(latitude);
